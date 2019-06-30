@@ -19,3 +19,4 @@
         * 章节 `8.6`
         * [`mcb.pyw`](./automate_python/multi_clipboard/mcb.pyw)
         * 持久化 `shelve`
+        * 创建软连接并添加到环境变量中

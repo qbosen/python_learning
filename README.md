@@ -12,6 +12,10 @@
 2. [《Python编程快速上手:让繁琐工作自动化》](https://book.douban.com/subject/26836700/)    
     1. 电话号码和email地址提取器
         * 章节 `7.15`
-        * [`phone_email_extractor`](./automate_python/phone_email_extractor)
+        * [`phone_email_extractor.py`](./automate_python/phone_email_extractor/phone_email_extractor.py)
         * 剪贴板 `pyperclip`
         * 正则表达式 `re`
+    2. 多重剪贴板
+        * 章节 `8.6`
+        * [`mcb.pyw`](./automate_python/multi_clipboard/mcb.pyw)
+        * 持久化 `shelve`

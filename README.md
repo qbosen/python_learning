@@ -20,3 +20,7 @@
         * [`mcb.pyw`](./automate_python/multi_clipboard/mcb.pyw)
         * 持久化 `shelve`
         * 创建软连接并添加到环境变量中
+    3. 备份为压缩文件
+        * 章节 `9.5`
+        * [back_up2zip.py](./automate_python/back_up_zip/back_up2zip.py)
+        * 压缩文件 `zipfile`

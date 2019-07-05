@@ -23,4 +23,5 @@
     3. 备份为压缩文件
         * 章节 `9.5`
         * [back_up2zip.py](./automate_python/back_up_zip/back_up2zip.py)
+            [readme.md](./automate_python/back_up_zip/readme.md)
         * 压缩文件 `zipfile`

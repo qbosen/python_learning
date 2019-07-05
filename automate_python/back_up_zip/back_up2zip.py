@@ -1,16 +1,8 @@
-import zipfile, os, re
-
-"""
--v verbose 详细输出
--h help 指令说明
--p preview 预览结果，不进行真实压缩
--m mute 不打印结果
--i include 包含的模式，默认所有'.*'
--e exclude 排除的模式，默认为'.*\.zip$'
--f force 直接执行，不要确认
--s source 源目录
--d destination 目标目录
-"""
+#! /usr/local/bin/python3
+# coding=utf-8
+import zipfile, os, re, sys
+from optparse import OptionParser
+from pprint import pformat
 
 
 def get_zipfile_path(folder, destination):
@@ -40,39 +32,91 @@ def create_zipfile(folder, destination, include_pattern=r'.*', exclude_pattern=N
     :return: zipfile绝对路径
     """
     zipfile_path = get_zipfile_path(folder, destination)
-    verbose_print('zipfile path: ', zipfile_path)
+    print('zipfile path: ', zipfile_path)
     back_zipfile = zipfile.ZipFile(zipfile_path, mode='w')
     include_regex = re.compile(include_pattern)
     exclude_regex = re.compile(exclude_pattern) if exclude_pattern else None
 
+    write_folders, write_files, filtered_files = [], [], []
     # 遍历目录
-    num_files = 0
     for folder_name, sub_folders, files in os.walk(folder):
-        verbose_print("adding folder: ", folder_name)
-        back_zipfile.write(folder_name)
+        write_folders.append(folder_name)
         # 遍历文件
         for file in files:
             base_name = os.path.basename(file)
             file_path = os.path.join(folder_name, file)
             if include_regex.match(base_name):
                 if exclude_regex is not None and exclude_regex.match(base_name):
-                    verbose_print('filtered file: ', file_path)
+                    filtered_files.append(file_path)
                     continue
-                num_files += 1
-                verbose_print("adding file: ", file_path)
-                back_zipfile.write(file_path)
-
+                write_files.append(file_path)
+            else:
+                filtered_files.append(file_path)
+    # 遍历结束
+    deal_with_options(back_zipfile, write_folders, write_files, filtered_files)
     back_zipfile.close()
-    verbose_print('Added {} files'.format(num_files))
+
+    print('Added %d files' % len(write_files))
 
 
-def verbose_print(*val):
-    if setting_verbose:
-        print(*val)
+def deal_with_options(back_zipfile, write_folders, write_files, filtered_files):
+    """
+    遍历结束后，打印信息，提供确认操作，完成文件写入操作
+    """
+
+    def format_list(items):
+        """根据options.pretty 选项返回list的字符串形式"""
+        return pformat(items) if options.pretty else repr(items)
+
+    # 如果有 verbose 选项，则详细输出信息
+    if options.verbose:
+        print('{:>3} folders: '.format(len(write_folders)), format_list(write_folders))
+        print('{:>3} files: '.format(len(write_files)), format_list(write_files))
+        print('{:>3} filtered: '.format(len(filtered_files)), format_list(filtered_files))
+    # 否则 只打印添加的文件信息，且最多打印十条
+    else:
+        print('{:>3} files: '.format(len(write_files)), format_list(write_files[:10]))
+
+    # 如果非 force 选项，则需要确认操作
+    if not options.force:
+        answer = input("continue processing?\t\t Y/N\n")
+        while answer.lower() not in ('y', 'n'):
+            answer = input("input must be Y/N")
+        if answer.lower() == 'n':
+            print("cancel processing...")
+            back_zipfile.close()
+            os.remove(back_zipfile.filename)
+            sys.exit()
+    # 正式写入内容
+    if options.verbose:
+        print('start writing files...')
+    for file in write_files:
+        back_zipfile.write(file)
+    if options.verbose:
+        print('complete writing files...')
 
 
 if __name__ == '__main__':
-    setting_verbose = True
-    os.chdir('/Users/qiubaisen/PycharmProjects/CrashCourse/automate_python')
-    create_zipfile('back_up_zip'
-                   , '/Users/qiubaisen/Movies/temp')
+    usage = '''Usage: %progress [options] arg1 arg2
+    arg1: target folder which will be zipped
+    arg2: destination folder where to place
+    '''
+
+    parser = OptionParser(usage=usage)
+    parser.add_option('-f', '--force', dest='force', action='store_true', default=False,
+                      help='process without any questions')
+    parser.add_option('-v', '--verbose', dest='verbose', action='store_true', default=False,
+                      help='show all messages to stdout')
+    parser.add_option('-p', '--pretty', dest='pretty', action='store_true', default=False,
+                      help='use pprint to show messages')
+    parser.add_option('-i', '--include', dest='include', action="store", type="string", default=r'.*',
+                      help='regex pattern which files should be included. Default Pattern: < .* >')
+    parser.add_option('-e', '--exclude', dest='exclude', action="store", type="string",
+                      help='regex pattern which files should be excluded. Default Pattern: None')
+
+    (options, args) = parser.parse_args()
+
+    if len(args) != 2:
+        parser.error("incorrect number of arguments")
+
+    create_zipfile(args[0], args[1], include_pattern=options.include, exclude_pattern=options.exclude)

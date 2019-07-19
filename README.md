@@ -25,3 +25,9 @@
         * [back_up2zip.py](./automate_python/back_up_zip/back_up2zip.py)
             [readme.md](./automate_python/back_up_zip/readme.md)
         * 压缩文件 `zipfile`
+
+3. [《Python3网络爬虫开发实战》](https://book.douban.com/subject/30175598/)
+    1. [猫眼电影排行](./spider/maoyan/README.md)
+        * 章节 `3.4`
+        * libs: `requests`
+    

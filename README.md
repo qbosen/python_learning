@@ -30,4 +30,6 @@
     1. [猫眼电影排行](./spider/maoyan/README.md)
         * 章节 `3.4`
         * libs: `requests`
-    
+    2. [用户微博抓取](./spider/weibo/weibo_list.py)
+        * 章节 `6.3`
+        * libs `pymongo`, `requests`, `pyquery`

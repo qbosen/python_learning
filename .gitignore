@@ -1,2 +1,5 @@
 .idea
 **/venv
+
+# 爬取结果
+spider/jiepai/images

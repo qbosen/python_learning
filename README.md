@@ -33,3 +33,6 @@
     2. [用户微博抓取](./spider/weibo/weibo_list.py)
         * 章节 `6.3`
         * libs `pymongo`, `requests`, `pyquery`
+    3. [头条保存图片](./spider/jiepai/README.md)
+        * 章节 `6.4`
+        * libs `hashlib`, `multiprocessing`, `requests`
